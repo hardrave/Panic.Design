@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panic.Design — Generate beautiful presentation slides from text prompts using AI. No backend, no login, just slides.">
+  <title>Panic.Design — AI Slide Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* =============================================
+   Panic.Design — Design System & Styles
+   ============================================= */
+
+/* --- Google Fonts (loaded in HTML) --- */
+
+:root {
+  /* Background palette */
+  --bg-app: #0c1017;
+  --bg-panel: #141a23;
+  --bg-surface: #1a2130;
+  --bg-hover: #1f2937;
+  --bg-input: #0a0e14;
+
+  /* Borders */
+  --border: #252d38;
+  --border-focus: #4a8eff;
+
+  /* Text */
+  --text-main: #e8edf4;
+  --text-secondary: #b0bac8;
+  --text-muted: #6b7a8d;
+  --text-dim: #4a5568;
+
+  /* Accent */
+  --accent: #4a8eff;
+  --accent-hover: #6ba1ff;
+  --accent-glow: rgba(74, 142, 255, 0.25);
+  --accent-subtle: rgba(74, 142, 255, 0.1);
+
+  /* Status colors */
+  --success: #22c55e;
+  --success-hover: #16a34a;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --warning: #f59e0b;
+
+  /* Font */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.6);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition: 200ms var(--ease-out);
+  --transition-slow: 300ms var(--ease-out);
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Typography & Inputs --- */
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+input[type="text"], input[type="password"], textarea, select {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+  width: 100%;
+}
+
+input[type="text"]:hover, input[type="password"]:hover, textarea:hover, select:hover {
+  border-color: #3a4555;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background-color: #0d1117;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7a8d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 7px 16px;
+  font-weight: 500;
+  font-size: 13px;
+  height: 34px;
+  white-space: nowrap;
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #3b7de8);
+  color: #fff;
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 1px 3px rgba(74, 142, 255, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent-hover), #5090f0);
+  box-shadow: 0 2px 8px rgba(74, 142, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  border-color: #3a4555;
+  color: var(--text-main);
+}
+
+.btn-danger {
+  background-color: var(--bg-surface);
+  color: var(--danger);
+  border-color: var(--border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success), #1aaa50);
+  color: #fff;
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 1px 3px rgba(34, 197, 94, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2ed26c, var(--success));
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.btn-icon:hover {
+  background-color: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.btn-small {
+  height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* --- App Layout --- */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --- Header --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  margin-right: 14px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ff3b3b, #ff8800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255, 60, 60, 0.4));
+  text-shadow: none;
+}
+.logo-dot {
+  background: linear-gradient(135deg, #ff6b35, #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.deck-title-input {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 10px !important;
+  width: 260px;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition) !important;
+}
+.deck-title-input:hover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+}
+.deck-title-input:focus {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow) !important;
+}
+
+/* --- Main Layout --- */
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background-color: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.slide-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Custom scrollbar */
+.slide-list::-webkit-scrollbar {
+  width: 5px;
+}
+.slide-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.slide-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+.slide-list::-webkit-scrollbar-thumb:hover {
+  background: #3a4555;
+}
+
+/* Sidebar empty state */
+.sidebar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+  flex: 1;
+}
+.sidebar-empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+.sidebar-empty-text {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Slide thumbnail */
+.slide-thumb-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 5px;
+  transition: all var(--transition);
+  position: relative;
+}
+.slide-thumb-container.selected {
+  background-color: var(--accent-subtle);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.slide-thumb-container:hover:not(.selected) {
+  background-color: rgba(255,255,255,0.03);
+}
+.slide-thumb-container.drag-over {
+  box-shadow: 0 -2px 0 0 var(--accent);
+}
+.slide-thumb-container.drag-over-below {
+  box-shadow: 0 2px 0 0 var(--accent);
+}
+.slide-thumb-container.dragging {
+  opacity: 0.4;
+}
+/* Flash animation for newly accepted slide */
+.slide-thumb-container.flash {
+  animation: thumbFlash 0.6s var(--ease-out);
+}
+@keyframes thumbFlash {
+  0% { background-color: rgba(74, 142, 255, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.slide-number {
+  font-size: 10px;
+  color: var(--text-dim);
+  width: 14px;
+  text-align: right;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.slide-thumb {
+  flex: 1;
+  aspect-ratio: 16/9;
+  background-color: #0a0e14;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  transition: border-color var(--transition);
+}
+.slide-thumb-container.selected .slide-thumb {
+  border-color: var(--accent);
+}
+.slide-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slide-thumb-actions {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.slide-thumb-container:hover .slide-thumb-actions {
+  opacity: 1;
+}
+.thumb-btn {
+  background: rgba(0,0,0,0.7);
+  border: none;
+  color: rgba(255,255,255,0.8);
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(4px);
+}
+.thumb-btn:hover {
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+}
+.thumb-btn.delete-btn:hover {
+  background: var(--danger);
+}
+
+/* --- Canvas Area --- */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-app);
+  position: relative;
+  min-width: 0;
+}
+
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.preview-container {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16/9;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: box-shadow var(--transition-slow);
+}
+.preview-container:hover {
+  box-shadow: var(--shadow-xl);
+}
+
+.preview-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 32px;
+  gap: 12px;
+}
+.empty-state-icon {
+  font-size: 48px;
+  opacity: 0.2;
+  margin-bottom: 4px;
+}
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.empty-state-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+/* Loader overlay */
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 14, 20, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+  pointer-events: none;
+}
+.loader-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-left-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 14px;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.loader-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Draft badge */
+.draft-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(245, 158, 11, 0.9);
+  color: #000;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  display: none;
+}
+.draft-badge.visible {
+  display: block;
+}
+
+/* --- Editor Controls --- */
+.editor-controls {
+  padding: 16px 24px 20px;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.editor-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.editor-row > input[type="text"] {
+  flex: 1;
+}
+
+.prompt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* --- Attachment Row --- */
+.attach-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+  transition: all var(--transition);
+  user-select: none;
+}
+.btn-attach:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+.attach-previews {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.attach-preview-item {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.attach-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.attach-preview-remove {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.attach-preview-item:hover .attach-preview-remove {
+  opacity: 1;
+}
+
+#slidePrompt {
+  min-height: 80px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.prompt-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.style-picker {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.style-picker select {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Custom style inline input */
+.custom-style-row {
+  display: none;
+  gap: 8px;
+  align-items: center;
+}
+.custom-style-row.visible {
+  display: flex;
+}
+.custom-style-row input {
+  flex: 1;
+}
+
+/* Draft actions */
+.draft-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity var(--transition), max-height var(--transition), padding-top var(--transition);
+}
+.draft-actions.visible {
+  opacity: 1;
+  max-height: 60px;
+  padding-top: 10px;
+}
+
+/* --- Modals --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  transform: translateY(12px) scale(0.97);
+  transition: transform var(--transition-slow);
+}
+.modal-overlay.open .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.btn-close:hover {
+  color: var(--text-main);
+  background-color: rgba(255,255,255,0.05);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.privacy-note {
+  font-size: 12px;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.03);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+  border: 1px solid var(--border);
+}
+
+.modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* --- Manage Styles Modal --- */
+.style-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.style-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.style-item:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: #3a4555;
+}
+.style-item-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.style-item-name {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 13px;
+}
+.style-item-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.style-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.style-item-actions .thumb-btn {
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.05);
+}
+.style-list-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* Style edit inline */
+.style-edit-input {
+  flex: 1;
+}
+
+/* New style form in manage modal */
+.new-style-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.new-style-form-row {
+  display: flex;
+  gap: 8px;
+}
+.new-style-form-row input {
+  flex: 1;
+}
+
+/* --- Toast Notifications --- */
+.toast-container {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  min-width: 260px;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  animation: toastIn 0.35s var(--ease-out) forwards;
+  transform: translateX(100%);
+  opacity: 0;
+}
+.toast.removing {
+  animation: toastOut 0.25s var(--ease-out) forwards;
+}
+@keyframes toastIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes toastOut {
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.toast-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.toast-message {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+.toast-close:hover {
+  color: var(--text-main);
+}
+
+.toast.toast-error {
+  border-left: 3px solid var(--danger);
+}
+.toast.toast-success {
+  border-left: 3px solid var(--success);
+}
+.toast.toast-info {
+  border-left: 3px solid var(--accent);
+}
+.toast.toast-warning {
+  border-left: 3px solid var(--warning);
+}
+
+/* --- Logo preview in brand modal --- */
+.brand-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.brand-logo-section img {
+  max-height: 48px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.brand-logo-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* --- Keyboard shortcut hint --- */
+.shortcut-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.shortcut-hint kbd {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-family: inherit;
+}
+
+/* --- Section divider --- */
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 180px;
+    min-width: 180px;
+  }
+  .canvas-wrapper {
+    padding: 16px;
+  }
+  .preview-container {
+    max-width: 100%;
+  }
+  .editor-controls {
+    padding: 12px 16px 16px;
+  }
+}
+
+@media (max-width: 680px) {
+  .sidebar {
+    display: none;
+  }
+  .deck-title-input {
+    width: 140px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="logo">Panic<span class="logo-dot">.</span>Design</h1>
+        <input type="text" id="deckTitle" class="deck-title-input" placeholder="Untitled Presentation" value="Untitled Presentation">
+      </div>
+      <div class="header-right">
+        <button id="btnNewPresentation" class="btn btn-secondary" title="Start a new presentation">New Deck</button>
+        <button id="btnBrand" class="btn btn-secondary" title="Brand Assets">Brand</button>
+        <button id="btnSettings" class="btn btn-secondary" title="Settings">Settings</button>
+        <button id="btnExport" class="btn btn-primary" title="Export as PPTX">Export PPTX</button>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- Left Sidebar (Slide Navigator) -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>Slides</h2>
+          <button id="btnNewSlide" class="btn-icon" title="New Slide">+</button>
+        </div>
+        <div class="slide-list" id="slideList">
+          <!-- Slide thumbnails inserted by JS -->
+        </div>
+      </aside>
+
+      <!-- Center Canvas + Editor -->
+      <main class="canvas-area">
+        <div class="canvas-wrapper">
+          <div class="preview-container" id="previewContainer">
+            <div class="empty-state" id="canvasEmptyState">
+              <div class="empty-state-icon">✦</div>
+              <div class="empty-state-title">No slide selected</div>
+              <div class="empty-state-desc">Write a prompt below and click Generate to create your first slide.</div>
+            </div>
+            <img id="mainPreviewImage" src="" alt="Slide Preview" style="display: none;">
+            <div class="draft-badge" id="draftBadge">Draft</div>
+            <div class="loader-overlay" id="loaderOverlay">
+              <div class="spinner"></div>
+              <p class="loader-text" id="loaderText">Generating…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor Controls -->
+        <div class="editor-controls">
+          <div class="editor-row">
+            <input type="text" id="slideTitle" placeholder="Slide title (optional)">
+          </div>
+          <div class="prompt-group">
+            <textarea id="slidePrompt" placeholder="Describe the slide content…" rows="5"></textarea>
+            <div class="attach-row">
+              <label class="btn-attach" id="btnAttachLabel" title="Attach reference photos to include in the prompt">
+                <span>📎 Attach Photo(s)</span>
+                <input type="file" id="slideAttachments" accept="image/*" multiple style="display:none;">
+              </label>
+              <div class="attach-previews" id="attachPreviews"></div>
+            </div>
+            <div class="prompt-toolbar">
+              <div class="style-picker">
+                <select id="slideStyle">
+                  <optgroup label="Presets" id="stylePresetsGroup">
+                    <option value="Premium dark startup pitch deck">Premium dark startup pitch</option>
+                    <option value="Clean consulting deck, white background, executive style">Clean consulting / executive</option>
+                    <option value="Hacker neon cyberpunk technical demo">Neon cyberpunk technical</option>
+                    <option value="Minimal Apple keynote style">Minimal Apple keynote</option>
+                    <option value="Corporate blue enterprise presentation">Corporate blue enterprise</option>
+                    <option value="Bold educational infographic">Bold educational infographic</option>
+                    <option value="Warm creative agency portfolio">Warm creative agency</option>
+                    <option value="Data-driven analytics dashboard slide">Data-driven analytics</option>
+                  </optgroup>
+                  <optgroup label="My Styles" id="styleCustomGroup">
+                    <!-- Custom styles inserted by JS -->
+                  </optgroup>
+                </select>
+                <button id="btnManageStyles" class="btn btn-secondary" title="Create & manage your own custom styles">✎ Styles</button>
+              </div>
+              <button id="btnGenerate" class="btn btn-primary">Generate</button>
+            </div>
+          </div>
+          <div class="draft-actions" id="draftActions">
+            <button id="btnAcceptDraft" class="btn btn-success">Accept</button>
+            <button id="btnRegenerateDraft" class="btn btn-secondary">Regenerate</button>
+            <button id="btnDiscardDraft" class="btn btn-danger">Discard</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="btn-close" id="btnCloseSettings">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="apiKey">OpenRouter API Key</label>
+          <input type="password" id="apiKey" placeholder="sk-or-v1-…">
+        </div>
+        <div class="form-group">
+          <label for="keyStorageMode">API Key Storage</label>
+          <select id="keyStorageMode">
+            <option value="session">Memory Only (Session)</option>
+            <option value="local">Save Locally (Plaintext)</option>
+            <option value="encrypted">Save Locally (Encrypted)</option>
+          </select>
+        </div>
+        <div class="form-group" id="encryptionPasswordGroup" style="display: none;">
+          <label for="keyPassword">Encryption Password</label>
+          <input type="password" id="keyPassword" placeholder="Local password">
+        </div>
+        <div class="form-group">
+          <label for="apiModel">Model</label>
+          <input type="text" id="apiModel" value="openai/gpt-5.4-image-2">
+        </div>
+        <div class="form-group">
+          <label for="imageSize">Image Quality</label>
+          <select id="imageSize">
+            <option value="1K">1K</option>
+            <option value="2K">2K</option>
+            <option value="4K">4K</option>
+          </select>
+        </div>
+        <p class="privacy-note">Privacy: prompts and images are sent directly to OpenRouter. Panic.Design does not store keys on any server.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btnClearCredentials" class="btn btn-danger btn-small">Clear Credentials</button>
+        <button id="btnCancelSettings" class="btn btn-secondary">Cancel</button>
+        <button id="btnSaveSettings" class="btn btn-primary">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brand Assets Modal -->
+  <div class="modal-overlay" id="brandModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Brand Assets</h2>
+        <button class="btn-close" id="btnCloseBrand">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="brandName">Company / Brand Name</label>
+          <input type="text" id="brandName" placeholder="e.g. Acme Corp">
+        </div>
+        <div class="form-group">
+          <label for="brandColors">Brand Colors</label>
+          <input type="text" id="brandColors" placeholder="e.g. #FF5C7A, Deep Blue">
+        </div>
+        <div class="form-group">
+          <label for="brandFonts">Font Preference</label>
+          <input type="text" id="brandFonts" placeholder="e.g. Inter, Helvetica">
+        </div>
+        <div class="form-group">
+          <label for="brandDescription">Brand Style Description</label>
+          <textarea id="brandDescription" placeholder="e.g. Playful but professional, lots of negative space…" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Logo / Reference Image</label>
+          <input type="file" id="brandLogoFile" accept="image/*" style="font-size:12px;">
+          <div class="brand-logo-section" id="brandLogoSection" style="display:none;">
+            <img id="brandLogoPreview" src="" alt="Logo Preview">
+            <div class="brand-logo-actions">
+              <button id="btnClearLogo" class="btn btn-secondary btn-small">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnSaveBrand" class="btn btn-primary">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Styles Modal -->
+  <div class="modal-overlay" id="stylesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Manage Styles</h2>
+        <button class="btn-close" id="btnCloseStyles">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="style-list" id="customStyleList">
+          <!-- Custom style items rendered by JS -->
+        </div>
+        <div class="new-style-form" id="newStyleForm">
+          <div class="section-label">Create New Style</div>
+          <div class="new-style-form-row">
+            <input type="text" id="newStyleName" placeholder="Style name (e.g. Dark Fintech)">
+          </div>
+          <div class="new-style-form-row">
+            <input type="text" id="newStyleDesc" placeholder="Style description (e.g. dark enterprise fintech presentation)">
+            <button id="btnAddStyle" class="btn btn-primary btn-small">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnCloseStylesDone" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+(() => {
+"use strict";
+
+// ═══════════════════════════════════════════════
+// Constants & Configuration
+// ═══════════════════════════════════════════════
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+const APP_TITLE = "Panic.Design";
+const FALLBACK_REFERER = "https://panic.design";
+const DB_NAME = "panicdesign_db";
+const STORE = "kv";
+const CUSTOM_STYLES_KEY = "panicdesign_custom_styles";
+const SAVE_DEBOUNCE_MS = 500;
+
+const PRESET_STYLES = [
+  "Premium dark startup pitch deck",
+  "Clean consulting deck, white background, executive style",
+  "Hacker neon cyberpunk technical demo",
+  "Minimal Apple keynote style",
+  "Corporate blue enterprise presentation",
+  "Bold educational infographic",
+  "Warm creative agency portfolio",
+  "Data-driven analytics dashboard slide"
+];
+
+// ═══════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════
+let state = {
+  deckTitle: "Untitled Presentation",
+  slides: [], // { id, title, prompt, dataUrl, createdAt, style }
+  selectedSlideId: null,
+  draftImage: null,
+  draftPrompt: "",
+  settings: {
+    provider: "openrouter",
+    model: "openai/gpt-5.4-image-2",
+    aspectRatio: "16:9",
+    imageSize: "1K",
+    keyStorageMode: "session"
+  },
+  brand: {
+    name: "",
+    colors: "",
+    fonts: "",
+    description: "",
+    logoDataUrl: null
+  }
+};
+
+let memoryApiKey = "";
+let saveTimer = null;
+let pendingAttachments = []; // { dataUrl: string, name: string }
+
+// ═══════════════════════════════════════════════
+// DOM Elements
+// ═══════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const els = {
+  deckTitle: $("deckTitle"),
+  btnNewPresentation: $("btnNewPresentation"),
+  btnBrand: $("btnBrand"),
+  btnSettings: $("btnSettings"),
+  btnExport: $("btnExport"),
+  btnNewSlide: $("btnNewSlide"),
+  sidebar: $("sidebar"),
+  slideList: $("slideList"),
+
+  canvasEmptyState: $("canvasEmptyState"),
+  mainPreviewImage: $("mainPreviewImage"),
+  draftBadge: $("draftBadge"),
+  loaderOverlay: $("loaderOverlay"),
+  loaderText: $("loaderText"),
+
+  slideTitle: $("slideTitle"),
+  slidePrompt: $("slidePrompt"),
+  slideStyle: $("slideStyle"),
+  stylePresetsGroup: $("stylePresetsGroup"),
+  styleCustomGroup: $("styleCustomGroup"),
+  btnManageStyles: $("btnManageStyles"),
+  btnGenerate: $("btnGenerate"),
+  draftActions: $("draftActions"),
+  btnAcceptDraft: $("btnAcceptDraft"),
+  btnRegenerateDraft: $("btnRegenerateDraft"),
+  btnDiscardDraft: $("btnDiscardDraft"),
+
+  // Settings
+  settingsModal: $("settingsModal"),
+  btnCloseSettings: $("btnCloseSettings"),
+  btnCancelSettings: $("btnCancelSettings"),
+  apiKey: $("apiKey"),
+  keyStorageMode: $("keyStorageMode"),
+  encryptionPasswordGroup: $("encryptionPasswordGroup"),
+  keyPassword: $("keyPassword"),
+  apiModel: $("apiModel"),
+  imageSize: $("imageSize"),
+  btnClearCredentials: $("btnClearCredentials"),
+  btnSaveSettings: $("btnSaveSettings"),
+
+  // Brand
+  brandModal: $("brandModal"),
+  btnCloseBrand: $("btnCloseBrand"),
+  brandName: $("brandName"),
+  brandColors: $("brandColors"),
+  brandFonts: $("brandFonts"),
+  brandDescription: $("brandDescription"),
+  brandLogoFile: $("brandLogoFile"),
+  brandLogoPreview: $("brandLogoPreview"),
+  brandLogoSection: $("brandLogoSection"),
+  btnClearLogo: $("btnClearLogo"),
+  btnSaveBrand: $("btnSaveBrand"),
+
+  // Manage Styles
+  stylesModal: $("stylesModal"),
+  btnCloseStyles: $("btnCloseStyles"),
+  btnCloseStylesDone: $("btnCloseStylesDone"),
+  customStyleList: $("customStyleList"),
+  newStyleName: $("newStyleName"),
+  newStyleDesc: $("newStyleDesc"),
+  btnAddStyle: $("btnAddStyle"),
+
+  // Attachments
+  slideAttachments: $("slideAttachments"),
+  attachPreviews: $("attachPreviews"),
+
+  // Toast
+  toastContainer: $("toastContainer")
+};
+
+// ═══════════════════════════════════════════════
+// IndexedDB
+// ═══════════════════════════════════════════════
+function openDb() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) return reject(new Error("IndexedDB not available"));
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const req = tx.objectStore(STORE).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(tx.error);
+  });
+}
+async function idbSet(key, value) {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(value, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbDel(key) {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Crypto (API Key Encryption)
+// ═══════════════════════════════════════════════
+const te = new TextEncoder();
+const td = new TextDecoder();
+
+function bytesToB64(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64ToBytes(b64) {
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function deriveKey(password, salt) {
+  const base = await crypto.subtle.importKey("raw", te.encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+    base,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+async function encryptText(text, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, te.encode(text)));
+  return { encrypted: true, salt: bytesToB64(salt), iv: bytesToB64(iv), ciphertext: bytesToB64(ct) };
+}
+async function decryptText(obj, password) {
+  const key = await deriveKey(password, b64ToBytes(obj.salt));
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(obj.iv) }, key, b64ToBytes(obj.ciphertext));
+  return td.decode(plain);
+}
+
+// ═══════════════════════════════════════════════
+// Toast Notification System
+// ═══════════════════════════════════════════════
+const TOAST_ICONS = {
+  error: "✕",
+  success: "✓",
+  info: "ℹ",
+  warning: "⚠"
+};
+
+function showToast(message, type = "info", durationMs = 4000) {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${TOAST_ICONS[type] || "ℹ"}</span>
+    <span class="toast-message">${escapeHtml(message)}</span>
+    <button class="toast-close" aria-label="Dismiss">&times;</button>
+  `;
+
+  const closeBtn = toast.querySelector(".toast-close");
+  const dismiss = () => {
+    toast.classList.add("removing");
+    setTimeout(() => toast.remove(), 260);
+  };
+  closeBtn.onclick = dismiss;
+
+  els.toastContainer.appendChild(toast);
+
+  if (durationMs > 0) {
+    setTimeout(dismiss, durationMs);
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ═══════════════════════════════════════════════
+// Image Helpers
+// ═══════════════════════════════════════════════
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+function resizeImage(dataUrl, maxDim = 512) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    };
+    img.src = dataUrl;
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Custom Styles (localStorage)
+// ═══════════════════════════════════════════════
+function getCustomStyles() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_STYLES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomStyles(styles) {
+  localStorage.setItem(CUSTOM_STYLES_KEY, JSON.stringify(styles));
+}
+
+function addCustomStyle(name, description) {
+  const styles = getCustomStyles();
+  const id = generateId();
+  styles.push({ id, name: name.trim(), description: description.trim(), createdAt: new Date().toISOString() });
+  saveCustomStyles(styles);
+  return id;
+}
+
+function deleteCustomStyle(id) {
+  const styles = getCustomStyles().filter(s => s.id !== id);
+  saveCustomStyles(styles);
+}
+
+function renameCustomStyle(id, newName) {
+  const styles = getCustomStyles();
+  const style = styles.find(s => s.id === id);
+  if (style) {
+    style.name = newName.trim();
+    saveCustomStyles(styles);
+  }
+}
+
+function updateCustomStyleDescription(id, newDesc) {
+  const styles = getCustomStyles();
+  const style = styles.find(s => s.id === id);
+  if (style) {
+    style.description = newDesc.trim();
+    saveCustomStyles(styles);
+  }
+}
+
+function populateStyleDropdown() {
+  // Clear custom group
+  els.styleCustomGroup.innerHTML = "";
+  const customs = getCustomStyles();
+  if (customs.length === 0) {
+    const placeholder = document.createElement("option");
+    placeholder.disabled = true;
+    placeholder.textContent = "No custom styles yet";
+    els.styleCustomGroup.appendChild(placeholder);
+  } else {
+    customs.forEach(style => {
+      const opt = document.createElement("option");
+      opt.value = style.description;
+      opt.textContent = style.name;
+      opt.dataset.customId = style.id;
+      els.styleCustomGroup.appendChild(opt);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════
+// State Persistence
+// ═══════════════════════════════════════════════
+function generateId() {
+  if (crypto.randomUUID) return crypto.randomUUID().substring(0, 8);
+  return Math.random().toString(36).substring(2, 11);
+}
+
+async function loadState() {
+  try {
+    const savedState = await idbGet("panicdesign_state");
+    if (savedState) {
+      state.deckTitle = savedState.deckTitle || state.deckTitle;
+      state.slides = savedState.slides || [];
+      if (savedState.settings) {
+        state.settings = { ...state.settings, ...savedState.settings };
+        if (!["1K", "2K", "4K"].includes(state.settings.imageSize)) {
+          state.settings.imageSize = "1K";
+        }
+      }
+      if (savedState.brand) state.brand = { ...state.brand, ...savedState.brand };
+    }
+
+    els.deckTitle.value = state.deckTitle;
+
+    // Load API Key
+    if (state.settings.keyStorageMode === "local" || state.settings.keyStorageMode === "encrypted") {
+      const storedKey = await idbGet("panicdesign_key");
+      if (storedKey && !storedKey.encrypted) {
+        memoryApiKey = storedKey.value;
+      }
+      // Encrypted keys will be prompted when needed
+    }
+  } catch (e) {
+    console.warn("Could not load state", e);
+  }
+}
+
+function saveState() {
+  // Debounced save
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await idbSet("panicdesign_state", {
+        deckTitle: state.deckTitle,
+        slides: state.slides,
+        settings: state.settings,
+        brand: state.brand
+      });
+    } catch (e) {
+      console.warn("Could not save state", e);
+    }
+  }, SAVE_DEBOUNCE_MS);
+}
+
+function saveStateImmediate() {
+  clearTimeout(saveTimer);
+  idbSet("panicdesign_state", {
+    deckTitle: state.deckTitle,
+    slides: state.slides,
+    settings: state.settings,
+    brand: state.brand
+  }).catch(e => console.warn("Could not save state", e));
+}
+
+// ═══════════════════════════════════════════════
+// Slide Selection & Rendering
+// ═══════════════════════════════════════════════
+function autoAcceptDraft() {
+  if (!state.draftImage) return;
+
+  if (state.selectedSlideId) {
+    const slide = state.slides.find(s => s.id === state.selectedSlideId);
+    if (slide) {
+      slide.dataUrl = state.draftImage;
+      slide.title = els.slideTitle.value.trim();
+      slide.prompt = els.slidePrompt.value.trim();
+      slide.style = els.slideStyle.value;
+    }
+  } else {
+    const id = generateId();
+    state.slides.push({
+      id,
+      title: els.slideTitle.value.trim(),
+      prompt: els.slidePrompt.value.trim(),
+      style: els.slideStyle.value,
+      dataUrl: state.draftImage,
+      createdAt: new Date().toISOString()
+    });
+    state.selectedSlideId = id;
+  }
+
+  state.draftImage = null;
+  hideDraftActions();
+  saveStateImmediate();
+}
+
+function selectSlide(id) {
+  autoAcceptDraft();
+
+  state.selectedSlideId = id;
+  hideDraftActions();
+
+  const slide = state.slides.find(s => s.id === id);
+  if (slide) {
+    els.slideTitle.value = slide.title || "";
+    els.slidePrompt.value = slide.prompt || "";
+    // Restore style — ensure it exists in the dropdown
+    restoreStyleSelection(slide.style);
+    showPreview(slide.dataUrl);
+  } else {
+    // New slide mode
+    els.slideTitle.value = "";
+    els.slidePrompt.value = "";
+    hidePreview();
+  }
+  renderSidebar();
+}
+
+function restoreStyleSelection(styleValue) {
+  if (!styleValue) return;
+  // Check if the value exists in options
+  const options = Array.from(els.slideStyle.options);
+  const match = options.find(o => o.value === styleValue);
+  if (match) {
+    els.slideStyle.value = styleValue;
+  } else {
+    // Style no longer in dropdown — select the first preset
+    els.slideStyle.selectedIndex = 0;
+  }
+}
+
+function renderSidebar() {
+  els.slideList.innerHTML = "";
+
+  if (state.slides.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "sidebar-empty";
+    empty.innerHTML = `
+      <div class="sidebar-empty-icon">📑</div>
+      <div class="sidebar-empty-text">No slides yet.<br>Generate your first slide below.</div>
+    `;
+    els.slideList.appendChild(empty);
+    return;
+  }
+
+  state.slides.forEach((slide, idx) => {
+    const thumb = document.createElement("div");
+    thumb.className = "slide-thumb-container";
+    thumb.dataset.idx = idx;
+    if (slide.id === state.selectedSlideId) thumb.classList.add("selected");
+    thumb.draggable = true;
+
+    // Drag events
+    thumb.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", String(idx));
+      e.dataTransfer.effectAllowed = "move";
+      thumb.classList.add("dragging");
+      // Slight delay to allow the browser to snapshot the drag image
+      requestAnimationFrame(() => thumb.classList.add("dragging"));
+    });
+    thumb.addEventListener("dragend", () => {
+      thumb.classList.remove("dragging");
+      // Clean up all drag-over classes
+      document.querySelectorAll(".drag-over, .drag-over-below").forEach(el => {
+        el.classList.remove("drag-over", "drag-over-below");
+      });
+    });
+    thumb.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      // Determine top/bottom half for insertion indicator
+      const rect = thumb.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      if (e.clientY < midY) {
+        thumb.classList.add("drag-over");
+        thumb.classList.remove("drag-over-below");
+      } else {
+        thumb.classList.add("drag-over-below");
+        thumb.classList.remove("drag-over");
+      }
+    });
+    thumb.addEventListener("dragleave", () => {
+      thumb.classList.remove("drag-over", "drag-over-below");
+    });
+    thumb.addEventListener("drop", (e) => {
+      e.preventDefault();
+      thumb.classList.remove("drag-over", "drag-over-below");
+      const fromIdx = parseInt(e.dataTransfer.getData("text/plain"), 10);
+      if (isNaN(fromIdx) || fromIdx === idx) return;
+
+      // Determine insertion point based on drop position
+      const rect = thumb.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      let toIdx = e.clientY < midY ? idx : idx + 1;
+
+      // Adjust for removing the source
+      const [moved] = state.slides.splice(fromIdx, 1);
+      if (fromIdx < toIdx) toIdx--;
+      state.slides.splice(toIdx, 0, moved);
+      saveStateImmediate();
+      renderSidebar();
+    });
+
+    thumb.onclick = () => selectSlide(slide.id);
+
+    const num = document.createElement("div");
+    num.className = "slide-number";
+    num.textContent = idx + 1;
+
+    const imgWrapper = document.createElement("div");
+    imgWrapper.className = "slide-thumb";
+    
+    const isSelected = slide.id === state.selectedSlideId;
+    const currentDataUrl = (isSelected && state.draftImage) ? state.draftImage : slide.dataUrl;
+
+    if (currentDataUrl) {
+      const img = document.createElement("img");
+      img.src = currentDataUrl;
+      img.alt = slide.title || `Slide ${idx + 1}`;
+      img.loading = "lazy";
+      imgWrapper.appendChild(img);
+    } else {
+      imgWrapper.style.display = "flex";
+      imgWrapper.style.alignItems = "center";
+      imgWrapper.style.justifyContent = "center";
+      imgWrapper.style.color = "var(--text-dim)";
+      imgWrapper.style.fontSize = "11px";
+      imgWrapper.style.fontWeight = "500";
+      imgWrapper.textContent = "Empty";
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "slide-thumb-actions";
+
+    const btnDup = document.createElement("button");
+    btnDup.className = "thumb-btn";
+    btnDup.title = "Duplicate";
+    btnDup.innerHTML = "⧉";
+    btnDup.onclick = (e) => {
+      e.stopPropagation();
+      const newSlide = { ...slide, id: generateId(), createdAt: new Date().toISOString() };
+      state.slides.splice(idx + 1, 0, newSlide);
+      saveStateImmediate();
+      renderSidebar();
+      showToast("Slide duplicated", "success", 2000);
+    };
+
+    const btnDel = document.createElement("button");
+    btnDel.className = "thumb-btn delete-btn";
+    btnDel.title = "Delete";
+    btnDel.innerHTML = "×";
+    btnDel.onclick = (e) => {
+      e.stopPropagation();
+      const wasSelected = state.selectedSlideId === slide.id;
+      state.slides.splice(idx, 1);
+      saveStateImmediate();
+      if (wasSelected) {
+        // Select adjacent slide or clear
+        if (state.slides.length > 0) {
+          const newIdx = Math.min(idx, state.slides.length - 1);
+          selectSlide(state.slides[newIdx].id);
+        } else {
+          selectSlide(null);
+        }
+      } else {
+        renderSidebar();
+      }
+      showToast("Slide deleted", "info", 2000);
+    };
+
+    actions.append(btnDup, btnDel);
+    imgWrapper.appendChild(actions);
+    thumb.append(num, imgWrapper);
+    els.slideList.appendChild(thumb);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Preview & Loading States
+// ═══════════════════════════════════════════════
+function showPreview(dataUrl) {
+  if (!dataUrl) {
+    hidePreview();
+    return;
+  }
+  els.canvasEmptyState.style.display = "none";
+  els.mainPreviewImage.style.display = "block";
+  els.mainPreviewImage.src = dataUrl;
+}
+
+function hidePreview() {
+  els.canvasEmptyState.style.display = "flex";
+  els.mainPreviewImage.style.display = "none";
+  els.mainPreviewImage.src = "";
+  els.draftBadge.classList.remove("visible");
+}
+
+function setLoading(isLoading, text = "Generating…") {
+  if (isLoading) {
+    els.loaderOverlay.classList.add("visible");
+  } else {
+    els.loaderOverlay.classList.remove("visible");
+  }
+  els.loaderText.textContent = text;
+  els.btnGenerate.disabled = isLoading;
+}
+
+function showDraftActions() {
+  els.draftActions.classList.add("visible");
+  els.draftBadge.classList.add("visible");
+}
+
+function hideDraftActions() {
+  els.draftActions.classList.remove("visible");
+  els.draftBadge.classList.remove("visible");
+}
+
+// ═══════════════════════════════════════════════
+// Prompt Builder
+// ═══════════════════════════════════════════════
+async function buildPromptPayload() {
+  const title = els.slideTitle.value.trim();
+  const desc = els.slidePrompt.value.trim();
+  const style = els.slideStyle.value;
+
+  if (!desc) throw new Error("Please enter a slide description.");
+
+  const lines = [
+    "Create one finished 16:9 presentation slide as a clean, flat digital slide image.",
+    "",
+    "Hard requirements:",
+    "- The output must look like a professional PowerPoint or Keynote slide.",
+    "- Large readable typography and strong visual hierarchy.",
+    "- Preserve the user's meaning exactly.",
+    "- Prefer 3 to 5 concise points if bullet-based.",
+    "- No tiny unreadable text, no UI chrome, no random watermark, no fake logos.",
+    "- No fake citations, no fake data, no fake company names unless requested.",
+    "- Do not make it look like a poster unless explicitly requested.",
+    "",
+    "Visual style: " + style
+  ];
+
+  if (title) lines.push("Slide title: " + title);
+  lines.push("", "Slide content / notes:", desc);
+
+  // Brand context
+  if (state.brand.name || state.brand.colors || state.brand.fonts || state.brand.description) {
+    lines.push("", "Corporate Brand Guidelines:");
+    if (state.brand.name) lines.push(`- Brand Name: ${state.brand.name}`);
+    if (state.brand.colors) lines.push(`- Brand Colors: ${state.brand.colors}`);
+    if (state.brand.fonts) lines.push(`- Brand Fonts: ${state.brand.fonts}`);
+    if (state.brand.description) lines.push(`- Brand Style: ${state.brand.description}`);
+    lines.push("- Ensure the slide reflects this brand identity.");
+  }
+
+  let payloadContent = [{ type: "text", text: lines.join("\n") }];
+  let hasImage = false;
+
+  // Previous slide as style reference — use the slide before current position
+  const refSlide = getPreviousSlideForReference();
+  if (refSlide) {
+    const tinyRef = await resizeImage(refSlide.dataUrl, 512);
+    payloadContent.push({
+      type: "text",
+      text: "Use the provided attached slide strictly as a visual style reference to keep the style coherent. The organization of columns, graphs, and layout must be different and fit the new content. Just the overall style like colors, headers, footers, and logos should be coherent. Do NOT copy its textual content."
+    });
+    payloadContent.push({ type: "image_url", image_url: { url: tinyRef } });
+    hasImage = true;
+  }
+
+  // Brand Logo
+  if (state.brand.logoDataUrl) {
+    try {
+      const tinyLogo = await resizeImage(state.brand.logoDataUrl, 256);
+      payloadContent.push({ type: "text", text: "Use the following logo image in the slide if appropriate." });
+      payloadContent.push({ type: "image_url", image_url: { url: tinyLogo } });
+      hasImage = true;
+    } catch (e) {
+      console.warn("Could not process brand logo:", e);
+    }
+  }
+
+  // User-attached photos
+  if (pendingAttachments.length > 0) {
+    payloadContent.push({ type: "text", text: "The user has attached the following reference photo(s). Use them as visual context for the slide content:" });
+    for (const att of pendingAttachments) {
+      payloadContent.push({ type: "image_url", image_url: { url: att.dataUrl } });
+      hasImage = true;
+    }
+  }
+
+  if (!hasImage) {
+    return lines.join("\n");
+  }
+
+  return payloadContent;
+}
+
+function getPreviousSlideForReference() {
+  if (state.slides.length === 0) return null;
+
+  if (state.selectedSlideId) {
+    const idx = state.slides.findIndex(s => s.id === state.selectedSlideId);
+    if (idx > 0) return state.slides[idx - 1];
+    // If first slide is selected, no previous reference
+    if (idx === 0 && state.slides.length > 1) return state.slides[0];
+    return null;
+  }
+
+  // New slide — use the last slide as reference
+  return state.slides[state.slides.length - 1];
+}
+
+// ═══════════════════════════════════════════════
+// API Response Parsing
+// ═══════════════════════════════════════════════
+function imageFromMessage(message) {
+  // Direct image fields
+  const direct = message?.images?.[0]?.image_url?.url || message?.images?.[0]?.url || message?.image?.url;
+  if (direct) return direct;
+
+  const content = message?.content;
+
+  if (typeof content === "string") {
+    // Check for inline base64 data URL
+    const m = content.match(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/);
+    if (m) return m[0];
+    // Try JSON parse
+    try { const p = JSON.parse(content); return p?.image_url?.url || p?.url; } catch { /* ignore */ }
+  }
+
+  if (Array.isArray(content)) {
+    for (const part of content) {
+      const u = part?.image_url?.url || part?.url;
+      if (u) return u;
+      if (typeof part?.text === "string") {
+        const m = part.text.match(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/);
+        if (m) return m[0];
+      }
+    }
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+// API Calls
+// ═══════════════════════════════════════════════
+async function resolveApiKey() {
+  if (memoryApiKey) return memoryApiKey;
+
+  const stored = await idbGet("panicdesign_key").catch(() => null);
+  if (!stored) return null;
+
+  if (stored.encrypted) {
+    const pw = prompt("Enter local encryption password to use API Key:");
+    if (!pw) throw new Error("Password required to decrypt API key.");
+    try {
+      memoryApiKey = await decryptText(stored, pw);
+    } catch {
+      throw new Error("Invalid encryption password.");
+    }
+  } else if (stored.value) {
+    memoryApiKey = stored.value;
+  }
+
+  return memoryApiKey;
+}
+
+async function generateSlide() {
+  const apiKey = await resolveApiKey();
+  if (!apiKey) throw new Error("Please configure your API Key in Settings first.");
+
+  const payloadContent = await buildPromptPayload();
+
+  let endpoint = OPENROUTER_ENDPOINT;
+  let headers = {
+    "Authorization": "Bearer " + apiKey,
+    "Content-Type": "application/json"
+  };
+
+  headers["HTTP-Referer"] = originForHeader();
+  headers["X-OpenRouter-Title"] = APP_TITLE;
+
+  const model = state.settings.model || "openai/gpt-5.4-image-2";
+  const body = {
+    model,
+    messages: [{ role: "user", content: payloadContent }],
+    stream: false,
+    modalities: ["image", "text"],
+    image_config: {
+      aspect_ratio: state.settings.aspectRatio,
+      image_size: state.settings.imageSize
+    }
+  };
+
+  const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify(body) });
+  const raw = await res.text();
+  let json;
+  try { json = JSON.parse(raw); } catch { json = { raw }; }
+
+  if (!res.ok) {
+    const errMsg = json?.error?.message || json?.message || json?.raw || ("HTTP " + res.status);
+    throw new Error(errMsg);
+  }
+
+  const message = json?.choices?.[0]?.message;
+  const imageUrl = imageFromMessage(message);
+
+  if (!imageUrl) {
+    const debug = JSON.stringify(message || json).substring(0, 300);
+    throw new Error("No image found in response. Check model supports image generation.\n\n" + debug);
+  }
+
+  if (imageUrl.startsWith("data:image/")) return imageUrl;
+
+  // Download remote image
+  const imgRes = await fetch(imageUrl);
+  if (!imgRes.ok) throw new Error("Could not download generated image from URL.");
+  return await blobToDataUrl(await imgRes.blob());
+}
+
+function originForHeader() {
+  return (location.origin && location.origin !== "null") ? location.origin : FALLBACK_REFERER;
+}
+
+// ═══════════════════════════════════════════════
+// Modals
+// ═══════════════════════════════════════════════
+function showModal(modal) {
+  modal.classList.add("open");
+  // Close on backdrop click
+  modal._backdropHandler = (e) => {
+    if (e.target === modal) closeModal(modal);
+  };
+  modal.addEventListener("click", modal._backdropHandler);
+  // Close on Escape
+  modal._escHandler = (e) => {
+    if (e.key === "Escape") closeModal(modal);
+  };
+  document.addEventListener("keydown", modal._escHandler);
+}
+
+function closeModal(modal) {
+  modal.classList.remove("open");
+  if (modal._backdropHandler) {
+    modal.removeEventListener("click", modal._backdropHandler);
+    modal._backdropHandler = null;
+  }
+  if (modal._escHandler) {
+    document.removeEventListener("keydown", modal._escHandler);
+    modal._escHandler = null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Event Listeners — Header
+// ═══════════════════════════════════════════════
+els.deckTitle.addEventListener("change", () => {
+  state.deckTitle = els.deckTitle.value.trim() || "Untitled Presentation";
+  saveState();
+});
+
+els.btnNewSlide.onclick = () => {
+  autoAcceptDraft();
+  
+  const emptySlide = state.slides.find(s => s.dataUrl === "");
+  if (emptySlide) {
+    selectSlide(emptySlide.id);
+    return;
+  }
+  
+  const id = generateId();
+  state.slides.push({
+    id,
+    title: "",
+    prompt: "",
+    style: els.slideStyle.value || PRESET_STYLES[0],
+    dataUrl: "",
+    createdAt: new Date().toISOString()
+  });
+  saveStateImmediate();
+  selectSlide(id);
+};
+
+// --- New Presentation ---
+els.btnNewPresentation.onclick = () => {
+  if (state.slides.length > 0) {
+    if (!confirm("Are you sure? Unsaved changes will be lost.")) return;
+  }
+  
+  state.slides = [];
+  state.draftImage = null;
+  state.deckTitle = "Untitled Presentation";
+  els.deckTitle.value = state.deckTitle;
+  hideDraftActions();
+  clearAttachments();
+  
+  // Create an initial empty slide
+  const id = generateId();
+  state.slides.push({
+    id,
+    title: "",
+    prompt: "",
+    style: els.slideStyle.value || PRESET_STYLES[0],
+    dataUrl: "",
+    createdAt: new Date().toISOString()
+  });
+  saveStateImmediate();
+  selectSlide(id);
+  showToast("Started a new presentation", "info", 2000);
+};
+
+// ═══════════════════════════════════════════════
+// Event Listeners — Generate & Draft
+// ═══════════════════════════════════════════════
+async function handleGenerate() {
+  if (!state.selectedSlideId) {
+    const emptySlide = state.slides.find(s => s.dataUrl === "");
+    if (emptySlide) {
+      state.selectedSlideId = emptySlide.id;
+    } else {
+      const id = generateId();
+      state.slides.push({
+        id,
+        title: els.slideTitle.value.trim(),
+        prompt: els.slidePrompt.value.trim(),
+        style: els.slideStyle.value || PRESET_STYLES[0],
+        dataUrl: "",
+        createdAt: new Date().toISOString()
+      });
+      state.selectedSlideId = id;
+    }
+    renderSidebar();
+  }
+
+  setLoading(true);
+  els.sidebar.style.pointerEvents = "none";
+  els.sidebar.style.opacity = "0.7";
+
+  try {
+    const dataUrl = await generateSlide();
+    state.draftImage = dataUrl;
+    showPreview(dataUrl);
+    showDraftActions();
+    renderSidebar();
+  } catch (e) {
+    showToast(e.message, "error", 6000);
+  } finally {
+    setLoading(false);
+    els.sidebar.style.pointerEvents = "auto";
+    els.sidebar.style.opacity = "1";
+  }
+}
+
+els.btnGenerate.onclick = handleGenerate;
+els.btnRegenerateDraft.onclick = handleGenerate;
+
+els.btnAcceptDraft.onclick = () => {
+  if (!state.draftImage) return;
+
+  const flashId = state.selectedSlideId;
+
+  autoAcceptDraft();
+  clearAttachments();
+  renderSidebar();
+
+  // Flash animation on accepted thumbnail
+  if (flashId) {
+    requestAnimationFrame(() => {
+      const thumbEl = els.slideList.querySelector(`.slide-thumb-container.selected`);
+      if (thumbEl) {
+        thumbEl.classList.add("flash");
+        thumbEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        setTimeout(() => thumbEl.classList.remove("flash"), 700);
+      }
+    });
+  }
+
+  showToast("Slide accepted", "success", 2000);
+};
+
+els.btnDiscardDraft.onclick = () => {
+  state.draftImage = null;
+  hideDraftActions();
+  if (state.selectedSlideId) {
+    selectSlide(state.selectedSlideId);
+  } else {
+    hidePreview();
+  }
+};
+
+// ═══════════════════════════════════════════════
+// Event Listeners — Settings Modal
+// ═══════════════════════════════════════════════
+els.btnSettings.onclick = () => {
+  els.apiModel.value = state.settings.model;
+  els.imageSize.value = state.settings.imageSize;
+  els.keyStorageMode.value = state.settings.keyStorageMode;
+  els.apiKey.value = memoryApiKey;
+  els.encryptionPasswordGroup.style.display = state.settings.keyStorageMode === "encrypted" ? "flex" : "none";
+  showModal(els.settingsModal);
+};
+
+els.btnCloseSettings.onclick = () => closeModal(els.settingsModal);
+els.btnCancelSettings.onclick = () => closeModal(els.settingsModal);
+
+els.keyStorageMode.onchange = () => {
+  els.encryptionPasswordGroup.style.display = els.keyStorageMode.value === "encrypted" ? "flex" : "none";
+};
+
+els.btnSaveSettings.onclick = async () => {
+  state.settings.provider = "openrouter";
+  state.settings.model = els.apiModel.value;
+  state.settings.imageSize = els.imageSize.value;
+  state.settings.keyStorageMode = els.keyStorageMode.value;
+
+  const keyInput = els.apiKey.value.trim();
+  if (keyInput) memoryApiKey = keyInput;
+
+  try {
+    if (state.settings.keyStorageMode === "session") {
+      await idbDel("panicdesign_key");
+    } else if (state.settings.keyStorageMode === "local" && memoryApiKey) {
+      await idbSet("panicdesign_key", { encrypted: false, value: memoryApiKey });
+    } else if (state.settings.keyStorageMode === "encrypted" && memoryApiKey) {
+      const pw = els.keyPassword.value;
+      if (!pw) {
+        showToast("Password required to save encrypted key.", "warning");
+        return;
+      }
+      const enc = await encryptText(memoryApiKey, pw);
+      await idbSet("panicdesign_key", enc);
+    }
+  } catch (e) {
+    showToast("Error saving credentials: " + e.message, "error");
+    return;
+  }
+
+  saveStateImmediate();
+  closeModal(els.settingsModal);
+  showToast("Settings saved", "success", 2000);
+};
+
+els.btnClearCredentials.onclick = async () => {
+  if (!confirm("Clear all stored API keys?")) return;
+  memoryApiKey = "";
+  els.apiKey.value = "";
+  els.keyPassword.value = "";
+  await idbDel("vibepres_key");
+  showToast("Credentials cleared", "info", 3000);
+};
+
+// ═══════════════════════════════════════════════
+// Event Listeners — Brand Modal
+// ═══════════════════════════════════════════════
+els.btnBrand.onclick = () => {
+  els.brandName.value = state.brand.name;
+  els.brandColors.value = state.brand.colors;
+  els.brandFonts.value = state.brand.fonts;
+  els.brandDescription.value = state.brand.description;
+  if (state.brand.logoDataUrl) {
+    els.brandLogoPreview.src = state.brand.logoDataUrl;
+    els.brandLogoSection.style.display = "flex";
+  } else {
+    els.brandLogoSection.style.display = "none";
+  }
+  showModal(els.brandModal);
+};
+
+els.btnCloseBrand.onclick = () => closeModal(els.brandModal);
+
+els.brandLogoFile.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast("Logo file is too large. Please use an image under 5MB.", "warning");
+    return;
+  }
+  try {
+    const dataUrl = await blobToDataUrl(file);
+    // Compress for storage
+    const compressed = await resizeImage(dataUrl, 512);
+    state.brand.logoDataUrl = compressed;
+    els.brandLogoPreview.src = compressed;
+    els.brandLogoSection.style.display = "flex";
+  } catch (err) {
+    showToast("Could not load logo image.", "error");
+  }
+};
+
+els.btnClearLogo.onclick = () => {
+  state.brand.logoDataUrl = null;
+  els.brandLogoFile.value = "";
+  els.brandLogoSection.style.display = "none";
+};
+
+els.btnSaveBrand.onclick = () => {
+  state.brand.name = els.brandName.value.trim();
+  state.brand.colors = els.brandColors.value.trim();
+  state.brand.fonts = els.brandFonts.value.trim();
+  state.brand.description = els.brandDescription.value.trim();
+  saveStateImmediate();
+  closeModal(els.brandModal);
+  showToast("Brand assets saved", "success", 2000);
+};
+
+// ═══════════════════════════════════════════════
+// Event Listeners — Manage Styles Modal
+// ═══════════════════════════════════════════════
+els.btnManageStyles.onclick = () => {
+  renderCustomStyleList();
+  showModal(els.stylesModal);
+};
+
+els.btnCloseStyles.onclick = () => closeModal(els.stylesModal);
+els.btnCloseStylesDone.onclick = () => {
+  closeModal(els.stylesModal);
+  populateStyleDropdown();
+};
+
+els.btnAddStyle.onclick = () => {
+  const name = els.newStyleName.value.trim();
+  const desc = els.newStyleDesc.value.trim();
+  if (!name) {
+    showToast("Please enter a style name.", "warning", 3000);
+    return;
+  }
+  if (!desc) {
+    showToast("Please enter a style description.", "warning", 3000);
+    return;
+  }
+  addCustomStyle(name, desc);
+  els.newStyleName.value = "";
+  els.newStyleDesc.value = "";
+  renderCustomStyleList();
+  populateStyleDropdown();
+  showToast(`Style "${name}" created`, "success", 2000);
+};
+
+function renderCustomStyleList() {
+  const list = els.customStyleList;
+  list.innerHTML = "";
+  const styles = getCustomStyles();
+
+  if (styles.length === 0) {
+    list.innerHTML = '<div class="style-list-empty">No custom styles yet. Create one below.</div>';
+    return;
+  }
+
+  styles.forEach(style => {
+    const item = document.createElement("div");
+    item.className = "style-item";
+    item.dataset.id = style.id;
+
+    const textDiv = document.createElement("div");
+    textDiv.style.flex = "1";
+    textDiv.style.minWidth = "0";
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "style-item-name";
+    nameEl.textContent = style.name;
+    nameEl.title = "Double-click to rename";
+    nameEl.addEventListener("dblclick", () => {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "style-edit-input";
+      input.value = style.name;
+      input.style.fontSize = "13px";
+      nameEl.replaceWith(input);
+      input.focus();
+      input.select();
+
+      const finish = () => {
+        const newName = input.value.trim();
+        if (newName && newName !== style.name) {
+          renameCustomStyle(style.id, newName);
+          showToast(`Style renamed to "${newName}"`, "success", 2000);
+        }
+        renderCustomStyleList();
+        populateStyleDropdown();
+      };
+      input.addEventListener("blur", finish);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); finish(); }
+        if (e.key === "Escape") renderCustomStyleList();
+      });
+    });
+
+    const descEl = document.createElement("div");
+    descEl.className = "style-item-desc";
+    descEl.textContent = style.description;
+
+    textDiv.append(nameEl, descEl);
+
+    const actionsDiv = document.createElement("div");
+    actionsDiv.className = "style-item-actions";
+
+    const btnDelete = document.createElement("button");
+    btnDelete.className = "thumb-btn delete-btn";
+    btnDelete.title = "Delete style";
+    btnDelete.innerHTML = "×";
+    btnDelete.onclick = () => {
+      deleteCustomStyle(style.id);
+      renderCustomStyleList();
+      populateStyleDropdown();
+      showToast(`Style "${style.name}" deleted`, "info", 2000);
+    };
+
+    actionsDiv.appendChild(btnDelete);
+    item.append(textDiv, actionsDiv);
+    list.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Keyboard Shortcuts
+// ═══════════════════════════════════════════════
+document.addEventListener("keydown", (e) => {
+  // Ctrl/Cmd + Enter to generate
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    if (document.activeElement === els.slidePrompt || document.activeElement === els.slideTitle) {
+      e.preventDefault();
+      if (!els.btnGenerate.disabled) {
+        handleGenerate();
+      }
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════
+// PPTX Export (Pure JS — Zero Dependencies)
+// ═══════════════════════════════════════════════
+function strBytes(s) { return te.encode(s); }
+function concatBytes(parts) {
+  const total = parts.reduce((n, p) => n + p.length, 0);
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const p of parts) { out.set(p, off); off += p.length; }
+  return out;
+}
+function u16(n) { return new Uint8Array([n & 255, (n >>> 8) & 255]); }
+function u32(n) { return new Uint8Array([n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]); }
+
+const crcTable = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[i] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32(bytes) {
+  let c = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) c = crcTable[(c ^ bytes[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+function zipStore(files) {
+  let offset = 0;
+  const locals = [];
+  const centrals = [];
+
+  for (const f of files) {
+    const name = strBytes(f.name);
+    const data = f.data instanceof Uint8Array ? f.data : strBytes(f.data);
+    const crc = crc32(data);
+
+    const local = concatBytes([
+      u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0),
+      name, data
+    ]);
+    locals.push(local);
+
+    const central = concatBytes([
+      u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0),
+      u16(0), u16(0), u32(0), u32(offset), name
+    ]);
+    centrals.push(central);
+    offset += local.length;
+  }
+
+  const cd = concatBytes(centrals);
+  const ld = concatBytes(locals);
+  const eocd = concatBytes([
+    u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length),
+    u32(cd.length), u32(ld.length), u16(0)
+  ]);
+  return concatBytes([ld, cd, eocd]);
+}
+
+function xmlEscape(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function dataUrlToBytes(dataUrl) {
+  const comma = dataUrl.indexOf(",");
+  if (comma < 0) throw new Error("Invalid data URL");
+  const meta = dataUrl.substring(0, comma);
+  const b64 = dataUrl.substring(comma + 1);
+  let ext = "png";
+  if (meta.includes("image/jpeg") || meta.includes("image/jpg")) ext = "jpg";
+  else if (meta.includes("image/webp")) ext = "webp";
+  return { bytes: b64ToBytes(b64), ext };
+}
+
+function buildPptx() {
+  if (!state.slides.length) throw new Error("Deck is empty — add at least one slide first.");
+  const images = state.slides.map(s => dataUrlToBytes(s.dataUrl));
+
+  // Map extensions to MIME types for Content_Types
+  const extSet = new Set(images.map(s => s.ext));
+  const extMimeMap = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" };
+
+  const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+${[...extSet].map(ext => `<Default Extension="${ext}" ContentType="${extMimeMap[ext] || "image/" + ext}"/>`).join("\n")}
+<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+<Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>
+<Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>
+<Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/>
+<Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
+${images.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join("\n")}
+</Types>`;
+
+  const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+</Relationships>`;
+
+  const coreXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<dc:title>${xmlEscape(state.deckTitle)}</dc:title>
+<dc:creator>Panic.Design</dc:creator>
+</cp:coreProperties>`;
+
+  const appXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Panic.Design</Application><PresentationFormat>On-screen Show (16:9)</PresentationFormat></Properties>`;
+
+  const presentationXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+<p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst>
+<p:sldIdLst>${Array.from({ length: state.slides.length }, (_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 2}"/>`).join("")}</p:sldIdLst>
+<p:sldSz cx="12192000" cy="6858000" type="wide"/>
+<p:notesSz cx="6858000" cy="9144000"/>
+</p:presentation>`;
+
+  let presRels = `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>`;
+  for (let i = 0; i < state.slides.length; i++) {
+    presRels += `<Relationship Id="rId${i + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i + 1}.xml"/>`;
+  }
+  const presentationRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${presRels}</Relationships>`;
+
+  const slideMasterXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`;
+
+  const slideMasterRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>`;
+
+  const slideLayoutXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld></p:sldLayout>`;
+
+  const slideLayoutRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`;
+
+  const themeXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Panic.Design"><a:themeElements><a:clrScheme name="Panic.Design"><a:dk1><a:srgbClr val="000000"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="1F2937"/></a:dk2><a:lt2><a:srgbClr val="F3F4F6"/></a:lt2><a:accent1><a:srgbClr val="4A8EFF"/></a:accent1><a:accent2><a:srgbClr val="22C55E"/></a:accent2><a:accent3><a:srgbClr val="F59E0B"/></a:accent3><a:accent4><a:srgbClr val="EF4444"/></a:accent4><a:accent5><a:srgbClr val="8B5CF6"/></a:accent5><a:accent6><a:srgbClr val="06B6D4"/></a:accent6><a:hlink><a:srgbClr val="4A8EFF"/></a:hlink><a:folHlink><a:srgbClr val="8B5CF6"/></a:folHlink></a:clrScheme><a:fontScheme name="Panic.Design"><a:majorFont><a:latin typeface="Arial"/></a:majorFont><a:minorFont><a:latin typeface="Arial"/></a:minorFont></a:fontScheme><a:fmtScheme name="Panic.Design"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="6350"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`;
+
+  const files = [
+    { name: "[Content_Types].xml", data: contentTypesXml },
+    { name: "_rels/.rels", data: rootRels },
+    { name: "docProps/core.xml", data: coreXml },
+    { name: "docProps/app.xml", data: appXml },
+    { name: "ppt/presentation.xml", data: presentationXml },
+    { name: "ppt/_rels/presentation.xml.rels", data: presentationRelsXml },
+    { name: "ppt/slideMasters/slideMaster1.xml", data: slideMasterXml },
+    { name: "ppt/slideMasters/_rels/slideMaster1.xml.rels", data: slideMasterRels },
+    { name: "ppt/slideLayouts/slideLayout1.xml", data: slideLayoutXml },
+    { name: "ppt/slideLayouts/_rels/slideLayout1.xml.rels", data: slideLayoutRels },
+    { name: "ppt/theme/theme1.xml", data: themeXml },
+  ];
+
+  images.forEach((img, i) => {
+    const sXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:pic><p:nvPicPr><p:cNvPr id="2" name="slide-image-${i + 1}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:spTree></p:cSld></p:sld>`;
+    const sRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${i + 1}.${img.ext}"/></Relationships>`;
+
+    files.push({ name: `ppt/slides/slide${i + 1}.xml`, data: sXml });
+    files.push({ name: `ppt/slides/_rels/slide${i + 1}.xml.rels`, data: sRels });
+    files.push({ name: `ppt/media/image${i + 1}.${img.ext}`, data: img.bytes });
+  });
+
+  return new Blob([zipStore(files)], { type: "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
+}
+
+els.btnExport.onclick = () => {
+  try {
+    const blob = buildPptx();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = (state.deckTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "panicdesign") + ".pptx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    showToast(`Exported "${state.deckTitle}" as PPTX`, "success", 3000);
+  } catch (e) {
+    showToast("Export failed: " + e.message, "error", 5000);
+  }
+};
+
+// ═══════════════════════════════════════════════
+// Initialization
+// ═══════════════════════════════════════════════
+(async () => {
+  await loadState();
+  populateStyleDropdown();
+  renderSidebar();
+})();
+
+// ═══════════════════════════════════════════════
+// Photo Attachments
+// ═══════════════════════════════════════════════
+els.slideAttachments.onchange = async (e) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  for (const file of files) {
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(`"${file.name}" is too large (max 10MB). Skipped.`, "warning", 4000);
+      continue;
+    }
+    try {
+      const raw = await blobToDataUrl(file);
+      const compressed = await resizeImage(raw, 512);
+      pendingAttachments.push({ dataUrl: compressed, name: file.name });
+    } catch {
+      showToast(`Could not load "${file.name}".`, "error", 3000);
+    }
+  }
+  // Clear the input so re-selecting the same file works
+  els.slideAttachments.value = "";
+  renderAttachmentPreviews();
+};
+
+function renderAttachmentPreviews() {
+  els.attachPreviews.innerHTML = "";
+  pendingAttachments.forEach((att, idx) => {
+    const item = document.createElement("div");
+    item.className = "attach-preview-item";
+    const img = document.createElement("img");
+    img.src = att.dataUrl;
+    img.alt = att.name;
+    img.title = att.name;
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "attach-preview-remove";
+    removeBtn.innerHTML = "×";
+    removeBtn.title = "Remove";
+    removeBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pendingAttachments.splice(idx, 1);
+      renderAttachmentPreviews();
+    };
+    item.append(img, removeBtn);
+    els.attachPreviews.appendChild(item);
+  });
+}
+
+function clearAttachments() {
+  pendingAttachments = [];
+  els.attachPreviews.innerHTML = "";
+  els.slideAttachments.value = "";
+}
+
+})();
+
+</script>
+</body>
+</html>
