@@ -1254,15 +1254,14 @@ select {
           <label for="imageSize">Image Quality</label>
           <select id="imageSize">
             <option value="1K">1K</option>
-            <option value="2K">2K</option>
+            <option value="2K" selected>2K</option>
             <option value="4K">4K</option>
           </select>
         </div>
         <p class="privacy-note">Privacy: prompts and images are sent directly to OpenRouter. Panic.Design does not store keys on any server.</p>
       </div>
       <div class="modal-footer">
-        <button id="btnClearCredentials" class="btn btn-danger btn-small">Clear Credentials</button>
-        <button id="btnCancelSettings" class="btn btn-secondary">Cancel</button>
+        <button id="btnClearCredentials" class="btn btn-danger">Clear Credentials</button>
         <button id="btnSaveSettings" class="btn btn-primary">Save &amp; Close</button>
       </div>
     </div>
@@ -1376,7 +1375,7 @@ let state = {
     provider: "openrouter",
     model: "openai/gpt-5.4-image-2",
     aspectRatio: "16:9",
-    imageSize: "1K",
+    imageSize: "2K",
     keyStorageMode: "session"
   },
   brand: {
@@ -1427,7 +1426,6 @@ const els = {
   // Settings
   settingsModal: $("settingsModal"),
   btnCloseSettings: $("btnCloseSettings"),
-  btnCancelSettings: $("btnCancelSettings"),
   apiKey: $("apiKey"),
   keyStorageMode: $("keyStorageMode"),
   encryptionPasswordGroup: $("encryptionPasswordGroup"),
@@ -2391,7 +2389,6 @@ els.btnSettings.onclick = () => {
 };
 
 els.btnCloseSettings.onclick = () => closeModal(els.settingsModal);
-els.btnCancelSettings.onclick = () => closeModal(els.settingsModal);
 
 els.keyStorageMode.onchange = () => {
   els.encryptionPasswordGroup.style.display = els.keyStorageMode.value === "encrypted" ? "flex" : "none";
@@ -2697,8 +2694,10 @@ function dataUrlToBytes(dataUrl) {
 }
 
 function buildPptx() {
-  if (!state.slides.length) throw new Error("Deck is empty — add at least one slide first.");
-  const images = state.slides.map(s => dataUrlToBytes(s.dataUrl));
+  autoAcceptDraft();
+  const validSlides = state.slides.filter(s => s.dataUrl);
+  if (!validSlides.length) throw new Error("Deck is empty — add and generate at least one slide first.");
+  const images = validSlides.map(s => dataUrlToBytes(s.dataUrl));
 
   // Map extensions to MIME types for Content_Types
   const extSet = new Set(images.map(s => s.ext));
@@ -2736,18 +2735,18 @@ ${images.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" Conte
   const presentationXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
 <p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst>
-<p:sldIdLst>${Array.from({ length: state.slides.length }, (_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 2}"/>`).join("")}</p:sldIdLst>
+<p:sldIdLst>${Array.from({ length: images.length }, (_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 2}"/>`).join("")}</p:sldIdLst>
 <p:sldSz cx="12192000" cy="6858000" type="wide"/>
 <p:notesSz cx="6858000" cy="9144000"/>
 </p:presentation>`;
 
   let presRels = `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>`;
-  for (let i = 0; i < state.slides.length; i++) {
+  for (let i = 0; i < images.length; i++) {
     presRels += `<Relationship Id="rId${i + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i + 1}.xml"/>`;
   }
   const presentationRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${presRels}</Relationships>`;
 
-  const slideMasterXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`;
+  const slideMasterXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`;
 
   const slideMasterRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>`;
 
@@ -2774,7 +2773,7 @@ ${images.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" Conte
   images.forEach((img, i) => {
     const sXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:pic><p:nvPicPr><p:cNvPr id="2" name="slide-image-${i + 1}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:spTree></p:cSld></p:sld>`;
-    const sRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${i + 1}.${img.ext}"/></Relationships>`;
+    const sRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${i + 1}.${img.ext}"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/></Relationships>`;
 
     files.push({ name: `ppt/slides/slide${i + 1}.xml`, data: sXml });
     files.push({ name: `ppt/slides/_rels/slide${i + 1}.xml.rels`, data: sRels });
