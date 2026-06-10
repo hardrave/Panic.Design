@@ -6,12 +6,15 @@ Panic.Design is a break-glass-in-case-of-emergency AI presentation generator. Wh
 
 **Zero dependencies. Zero backend. Zero subscriptions. One single HTML file.**
 
+![Panic.Design demo](./assets/demo.gif)
+
 ---
 
 ## Features
 
-* **Instant Generation:** Type your frantic thoughts, select an emergency vibe (e.g., "Save-My-Job Corporate"), and get a pixel-perfect slide.
+* **Instant Generation:** Type your frantic thoughts, select an emergency vibe (e.g., "Save-My-Job Corporate"), and get a presentation-ready slide.
 * **Context-Aware Vision:** Attach reference images. The app automatically downscales them and feeds them to the vision model to maintain your specific visual context.
+* **Coherent Deck Flow:** Previously generated slides are used as visual context so new slides can better match the deck’s style, density, palette, and layout direction.
 * **Frictionless UI:** Smooth dark mode, drag-and-drop slide reordering, draft generation states, and custom scrollbars. 
 * **Bring Your Own Key (BYOK):** Plug in your own OpenRouter API key. You pay for exactly what you use, directly to the AI provider.
 
@@ -19,10 +22,10 @@ Panic.Design is a break-glass-in-case-of-emergency AI presentation generator. Wh
 
 ## The Engineering Flex (Under the Hood)
 
-In a world of bloated Next.js boilerplates and endless node_modules, Panic.Design is a masterclass in minimalist frontend engineering. The entire application exists inside a single index.html file.
+In a world of bloated Next.js boilerplates and endless `node_modules`, Panic.Design is a radically minimalist frontend application. The entire application exists inside a single `panic_design.html` file.
 
 * **Native .pptx Export (Zero Libraries):** We didn't use JSZip or PptxGenJS. We wrote a custom, pure-vanilla JavaScript ZIP packager with raw crc32 hashing and Uint8Array byte manipulation to dynamically construct Microsoft PowerPoint XML files natively in the browser.
-* **Military-Grade Security:** API keys never touch a backend server. They are encrypted locally in your browser using the native Web Crypto API via **AES-GCM encryption**.
+* **Local Key Encryption:** API keys never touch a backend server, because there is no backend. They are encrypted locally in your browser using the native Web Crypto API via **AES-GCM encryption**.
 * **Local-First State:** All presentation drafts, slide data, and user preferences are persisted entirely client-side using **IndexedDB**. 
 * **Smart Token Optimization:** Attached reference photos are instantly drawn to a hidden HTML5 canvas, resized to a maximum of 512px, and converted to base64 to save your API tokens before ever making a network request.
 
@@ -51,4 +54,4 @@ It specifically targets the **name.com Domain Roulette** challenge, built direct
 
 ## License
 
-MIT License. Do whatever you want with it.
+MIT License. Use it, fork it, remix it, and ship something cool.
